@@ -28,6 +28,7 @@ class car:
         self.speed=-1*self.speed
         self.carMaxSpeed=self.speed
         self.carIdealExitTime=(7*330+46*6)/speed
+        self.stoppingDistance=1/2*self.speed**2/self.carAccel
 
 
 
@@ -55,9 +56,14 @@ class car:
             self.carPosition+=self.speed*(time-self.carTime)
 
         #check if the car needs to slow down but not stop
-        #elif (self.carPosition+self.speed*26)>crosswalkPosition and\
-        #        (self.carPosition-self.carLength+self.speed*26)<crosswalkPosition+crosswalkWidth:
-        elif (self.carPosition-self.carLength)+car.speed*(time-self.carTime):
+        elif (self.carPosition+self.speed*26)>crosswalkPosition and\
+                (self.carPosition-self.carLength+self.speed*26)<crosswalkPosition+crosswalkWidth:
+            deltaTime2BeginStopping=((crosswalkPosition-self.stoppingDistance)-self.carPosition)/self.speed
+            self.carPosition+=deltaTime2BeginStopping*self.speed
+            self.carPosition+=self.speed*(time-(self.carTime+deltaTime2BeginStopping))-1/2*(time-(self.carTime+deltaTime2BeginStopping))**2*self.carAccel
+            self.speed=self.speed-(time-(self.carTime+deltaTime2BeginStopping))*self.carAccel
+        #check to see if the car will need to start stopping before the light turns red
+        elif :
             pass
 
     def redState(self,time):
@@ -73,7 +79,7 @@ class car:
                 self.carPosition=self.carPosition+self.speed*(accelTime)+(1/2*self.carAccel*(accelTime)**2)
                 self.speed=self.carMaxSpeed
                 self.carPosition+=(time-(accelTime+self.carTime))*self.speed
-        elif 
+        elif
     # methods
     def carStates(self,lightState,time):
 
