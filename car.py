@@ -25,7 +25,7 @@ class car:
         self.carBirth=birthTime
         self.speed=speed*5280/3600
         self.carTime=self.carBirth
-        self.speed=-1*self.speed
+        self.speed=self.speed
         self.carMaxSpeed=self.speed
         self.carIdealExitTime=(7*330+46*6)/speed
         self.stoppingDistance=1/2*self.speed**2/self.carAccel
@@ -41,7 +41,7 @@ class car:
     def greenState(self,time):
 
         if self.speed==self.carMaxSpeed:
-            self.carPosition=self.carPosition+self.carMaxSpeed*(time-self.carTime)
+            self.carPosition=self.carPosition+self.speed*(time-self.carTime)
         else:
             accelTime=self.findTime2GetBack2Speed(time)
             self.carPosition=self.carPosition+self.speed*(accelTime)+(1/2*self.carAccel*(accelTime)**2)
@@ -75,7 +75,7 @@ class car:
 
         #check if the car is far behind the crosswalk and will not need to stop at all or
         #if it is passed the crosswalk
-        if self.carPosition+self.speed*(time-self.time)<crosswalkPosition or self.carPosition-self.carLength>crosswalkPosition+crosswalkWidth:
+        if self.carPosition+self.speed*(time-self.carTime)<crosswalkPosition or self.carPosition-self.carLength>crosswalkPosition+crosswalkWidth:
             if self.speed==self.carMaxSpeed:
                 self.carPosition=self.carPosition+self.carMaxSpeed*(time-self.carTime)
             else:
@@ -108,5 +108,12 @@ class car:
         elif lightState=="Red":
             self.redState(time)
         self.carTime=time
+    def carExit(self,time):
+        if self.carPosition>=7*330+46*6:
+            newTime=(self.carPosition-7*330+46*6)/self.speed
+            totalTime=time-newTime
+            return totalTime
+        else:
+            return False
 
 
