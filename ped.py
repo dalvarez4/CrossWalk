@@ -86,22 +86,25 @@ class ped:
     peds_waiting = 0
     #shared amount of peds crossing
     peds_crossing = 0
+    #trace values for button presses
+    button_trace = []
 
-    def __init__(self, time, event, event_list, num_peds):
+    def __init__(self, time, event, event_list, num_peds, speed):
         #distance until they are at the button
         #unsure what the width of the side streets are, assume side streets are same width as the main street as only one street width is stated
         #have to cross a half block, side street, and another half block to reach the button
         self.button_pos = B/2 * + S + B/2
         self.delay_start = None
         self.speed = Uniform(2.6, 4.1)
+        self.speed = speed
         #just gonna worry about spawning on one side for now since peds don't collide
         #might want to worry about the next spawn event in the main loop to ensure that ID's stay unique
-        self.next_ped = time + Exponential(2 * lambda_p)
+        #self.next_ped = time + Exponential(2 * lambda_p)
         self.last_time = time
         #pedestrians spawn across one street and one half block, block width = B, width of street = S
         #calculate time for button event
         self.button_time = self.button_pos / self.speed
-        event_list.insert(events.ped_event("at_button", self.button_time, self.id))
+        #event_list.insert(events.ped_event("at_button", self.button_time, self.id))
         self.id = num_peds + 1
         self.walked = False
         self.at_button = False
@@ -111,8 +114,6 @@ class ped:
         #add ped_impatiant for one minute after arriving at button
         #newly spaned peds should still be considered for walking? Prolly impossible for them to cross the total distance in time.
         #event_list = self.update(event, time, event_list)
-
-        return event_list
 
     def push_button(self, time, event_list, signal_left):
         #assuming cross walk works instantanuosly on a stale (with yellow delay)

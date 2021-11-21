@@ -35,7 +35,9 @@ while cars_passed < max_cars:
     event = event_list.next()
     sec_until_green_exp = sec_until_green_exp - (time - last_time)
     if event.name == 'ped_spawn':
-        peds[len(peds) + 1] = ped.ped(time, event, event_list, len(peds))
+        curr_ped = ped.ped(time, event, event_list, len(peds))
+        event_list.insert(events.ped_event("at_button", curr_ped.button_time, curr_ped.id))
+        peds[len(peds) + 1] = curr_ped
         event_list.insert(events.event("ped_spawn", ped.Uniform() + time))
     elif event.name == "ped_exit":
         ped_delay += peds.pop(event.id).update(event.name, time, event_list)
