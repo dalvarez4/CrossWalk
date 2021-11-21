@@ -133,7 +133,6 @@ class ped:
             #time they finished crossing if applicable
             crossed_at = None
             #check where the pedestrian currently is
-            
             #button is in the middle of the crosswalk so they just need to be within twelve feet of the button to be at the crosswalk
             if self.peds_crossing <=20 and (self.at_button or self.button_pos - self.pos <= 12):
                 #anyone at the button or at the crosswalk should be allowed to walk
