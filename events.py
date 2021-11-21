@@ -71,6 +71,7 @@ class event_list:
             index = to_swap
             l = self.child_l(index)
             r = self.child_r(index)
+            
         return to_return
 
 #class event_list:
