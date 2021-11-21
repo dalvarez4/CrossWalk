@@ -47,9 +47,14 @@ while cars_passed < max_cars:
     elif event.name == "g_exp":
         #pushed button during yellow light
         sec_until_green_exp == 0
+    #check if its a single ped event otherwise
     #update peds in the order they arrived
-    for key in peds.keys.sort():
-        event_list = peds[key].update(event.name, time, event_list, signal_left = sec_until_green_exp)
+    if isinstance(event, events.ped_event):
+        if peds.has_key(event.id):
+            peds[event.id].update(event.name, time, event_list, signal_left = sec_until_green_exp)
+    else:
+        for key in peds.keys.sort():
+            event_list = peds[key].update(event.name, time, event_list, signal_left = sec_until_green_exp)
     
     
     
