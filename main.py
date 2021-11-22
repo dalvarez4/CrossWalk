@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import car
 import ped
 import events
