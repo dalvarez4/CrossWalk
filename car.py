@@ -3,6 +3,7 @@ blockLength=330
 crosswalkWidth=24
 streetWidth=46
 crosswalkPosition=1181#330*3+46*3+330/2-24/2
+
 class car:
 
     #car charecteristics:
@@ -16,7 +17,7 @@ class car:
     delayAutomobile=0
     carExit=0
     stoppingDistance=0
-
+    yellowTimer=0
 
 
 
@@ -25,9 +26,9 @@ class car:
         self.carBirth=birthTime
         self.speed=speed*5280/3600
         self.carTime=self.carBirth
-        self.speed=-1*self.speed
+        self.speed=self.speed
         self.carMaxSpeed=self.speed
-        self.carIdealExitTime=(7*330+46*6)/speed
+        self.carIdealExitTime=(7*330+46*6)/speed+self.carTime
         self.stoppingDistance=1/2*self.speed**2/self.carAccel
 
 
@@ -41,7 +42,7 @@ class car:
     def greenState(self,time):
 
         if self.speed==self.carMaxSpeed:
-            self.carPosition=self.carPosition+self.carMaxSpeed*(time-self.carTime)
+            self.carPosition=self.carPosition+self.speed*(time-self.carTime)
         else:
             accelTime=self.findTime2GetBack2Speed(time)
             self.carPosition=self.carPosition+self.speed*(accelTime)+(1/2*self.carAccel*(accelTime)**2)
@@ -49,55 +50,49 @@ class car:
             self.carPosition+=(time-(accelTime+self.carTime))*self.speed
 
     def yellowState(self,time):
-
-        #check to see that the timing is correct i.e 8 secs instead of the difference of time-self.carTime
-
-        #the yellow light will end at the given time
-        #check if the car will be pass the crosswalk by the time the yellow light turns yellow or if it won't
-        #reach the crosswalk by the time the light turns green
-        if (self.carPosition-self.carLength+8*self.speed-(crosswalkPosition+crosswalkWidth))>0 or(self.carPosition+26*self.speed)<crosswalkPosition:
+        deltaYellowTime=time-self.yellowTimer
+        self.yellowTimer=time
+        deltaPos=-deltaYellowTime*self.speed+crosswalkPosition+crosswalkWidth-self.carLength
+        if self.carPosition>deltaPos:
+            self.carPosition+=self.speed*(time-self.carTime)
+        elif crosswalkPosition-self.stoppingDistance<self.carPosition<deltaPos:
+            self.carPosition+=self.speed*(time-self.carTime)-1/2*self.carAccel*(time-self.carTime)**2
+            self.speed=self.speed-self.carAccel*(time-self.carTime)
+        elif self.carPosition<deltaPos:
+            if self.carPosition+self.speed*(time-self.carTime)<self.stoppingDistance:
+                self.carPosition+=self.speed*(time-self.carTime)
+            else:
+                newTime=(crosswalkPosition-self.stoppingDistance-self.carPosition)/self.speed+self.carTime
+                self.carPosition=crosswalkPosition-self.stoppingDistance
+                self.carPosition+=self.speed*(time-newTime)-1/2*self.carAccel*(time-newTime)**2
+                self.speed=self.speed-self.carAccel*(time-newTime)
+        else:
             self.carPosition+=self.speed*(time-self.carTime)
 
-        #check if the car needs to slow down but not stop
-        elif (self.carPosition+self.speed*26)>crosswalkPosition and\
-                (self.carPosition-self.carLength+self.speed*26)<crosswalkPosition+crosswalkWidth:
-            deltaTime2BeginStopping=((crosswalkPosition-self.stoppingDistance)-self.carPosition)/self.speed
-            self.carPosition+=deltaTime2BeginStopping*self.speed
-            self.carPosition+=self.speed*(time-(self.carTime+deltaTime2BeginStopping))-1/2*(time-(self.carTime+deltaTime2BeginStopping))**2*self.carAccel
-            self.speed=self.speed-(time-(self.carTime+deltaTime2BeginStopping))*self.carAccel
-        #check to see if the car will need to start stopping before the light turns red and will come to a complete stop
-        elif (crosswalkPosition - self.stoppingDistance) < (self.carPosition + self.speed * (time - self.carTime)) < crosswalkPosition:
-            self.carPosition=crosswalkPosition
-            self.speed=0
 
     def redState(self,time):
-        # the red light will end at the given time
 
-        #check if the car is far behind the crosswalk and will not need to stop at all or
-        #if it is passed the crosswalk
-        if self.carPosition+self.speed*(time-self.time)<crosswalkPosition or self.carPosition-self.carLength>crosswalkPosition+crosswalkWidth:
-            if self.speed==self.carMaxSpeed:
-                self.carPosition=self.carPosition+self.carMaxSpeed*(time-self.carTime)
-            else:
-                accelTime=self.findTime2GetBack2Speed(time)
-                self.carPosition=self.carPosition+self.speed*(accelTime)+(1/2*self.carAccel*(accelTime)**2)
-                self.speed=self.carMaxSpeed
-                self.carPosition+=(time-(accelTime+self.carTime))*self.speed
 
-        elif (self.carPosition+self.speed*(time-self.carTime))>crosswalkPosition and (self.carPosition+self.speed*(time-self.carTime)-self.carLength)<crosswalkPosition+crosswalkWidth:
-            if crosswalkPosition-self.stoppingDistance <self.carPosition:
-                self.speed=0
-                self.carPosition=crosswalkPosition
-            else:
-                deltaTime2BeginStopping=((crosswalkPosition-self.stoppingDistance)-self.carPosition)/self.speed
 
-                self.carPosition+=deltaTime2BeginStopping*self.speed
-                self.carPosition+=self.speed*(time-(self.carTime+deltaTime2BeginStopping))-1/2*(time-(self.carTime+deltaTime2BeginStopping))**2*self.carAccel
-                self.speed=self.speed-(time-(self.carTime+deltaTime2BeginStopping))*self.carAccel
-
-        elif (crosswalkPosition - self.stoppingDistance) < (self.carPosition + self.speed * (time - self.carTime)) < crosswalkPosition:
+        if self.carPosition-self.carLength>crosswalkPosition+crosswalkWidth:
+            self.carPosition+=self.speed*(time-self.carTime)
+        elif self.carPosition+self.speed*(time-self.carTime)>crosswalkPosition:
             self.carPosition=crosswalkPosition
             self.speed=0
+        #this can be negative but I think we were told to ignore this
+        elif self.carPosition+self.speed*(time-self.carTime)>crosswalkPosition-self.stoppingDistance:
+            if self.carPosition>crosswalkPosition-self.stoppingDistance:
+                self.carPosition+=self.speed*(time-self.carTime)-1/2*self.carAccel*(time-self.carTime)**2
+                self.speed=self.speed-self.carAccel*(time-self.carTime)
+            else:
+                newTime=(crosswalkPosition-self.stoppingDistance-self.carPosition)/car.speed+self.carTime
+                self.carPosition=crosswalkPosition-self.stoppingDistance
+                self.carPosition+=self.speed*(time-newTime)-1/2*self.carAccel*(time-newTime)**2
+                self.speed=self.speed-self.carAccel*(time-newTime)
+        else:
+            self.carPosition+=self.speed*(time-self.carTime)
+
+
     # methods
     def carStates(self,lightState,time):
 
@@ -109,4 +104,13 @@ class car:
             self.redState(time)
         self.carTime=time
 
+    def carExit(self,time):
+        if self.carPosition>=7*330+46*6:
+            newTime=(self.carPosition-7*330+46*6)/self.speed
+            totalTime=time-newTime
+            return totalTime
+        else:
+            return False
 
+    def updateYellowTime(self,time):
+        self.yellowTimer=time
