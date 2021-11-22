@@ -45,7 +45,7 @@ if __name__ == '__main__':
     ped_arr, ped_speed = map(float, ped_dist.readline().split(' '))
 
     '''loop idea'''
-    ped_delay = 0
+    ped_delay_mu = 0
     car_delay = 0
     max_cars = 200
     cars_passed = 0
@@ -60,17 +60,24 @@ if __name__ == '__main__':
     last_signal_time = 0
     #when will the next green light end
     sec_until_green_exp = 35
-    while cars_passed < arrivals:
+    peds_crossed = 0
+    total_peds = 0
+    total_cars = 0
+    while cars_passed < arrivals and peds_crossed < arrivals:
         event = event_list.next()
         sec_until_green_exp = sec_until_green_exp - (time - last_time)
         if event.name == 'ped_spawn':
-            curr_ped = ped.ped(time, event, event_list, len(peds), ped.Uniform(x = ped_speed))
+            curr_ped = ped.ped(time, event, event_list, total_peds, ped.Uniform(x = ped_speed))
             event_list.insert(events.ped_event("at_button", curr_ped.button_time, curr_ped.id))
-            peds[len(peds) + 1] = curr_ped
-            ped_arr, ped_speed = map(float, ped_dist.readline().split(' '))
-            event_list.insert(events.event("ped_spawn", ped.Exponential(2 * lambda_p, x = ped_arr) + time))
+            peds[total_peds] = curr_ped
+            total_peds += 1
+            if total_peds < arrivals:
+                ped_arr, ped_speed = map(float, ped_dist.readline().split(' '))
+                event_list.insert(events.event("ped_spawn", ped.Exponential(lambda_p / 60 / 2, x = ped_arr) + time))
         elif event.name == "ped_exit":
-            ped_delay += peds.pop(event.id).update(event.name, time, event_list)
+            peds_crossed += 1
+            new_delay = peds.pop(event.id).update(event.name, time, event_list)
+            ped_delay_mu = ped_delay_mu + (1/(peds_crossed)) * (new_delay - ped_delay_mu)
         elif event.name == "r_exp":
             sec_until_green_exp = 35
         elif event.name == "y_exp":
@@ -87,7 +94,8 @@ if __name__ == '__main__':
         else:
             for key in peds.keys.sort():
                 event_list = peds[key].update(event.name, time, event_list, signal_left = sec_until_green_exp)
-
+    print(ped_delay_mu)
+    exit(0)
 
 
 
