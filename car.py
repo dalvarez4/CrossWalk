@@ -62,7 +62,7 @@ class car:
             if self.carPosition+self.speed*(time-self.carTime)<self.stoppingDistance:
                 self.carPosition+=self.speed*(time-self.carTime)
             else:
-                newTime=(crosswalkPosition-self.stoppingDistance-self.carPosition)/car.speed+self.carTime
+                newTime=(crosswalkPosition-self.stoppingDistance-self.carPosition)/self.speed+self.carTime
                 self.carPosition=crosswalkPosition-self.stoppingDistance
                 self.carPosition+=self.speed*(time-newTime)-1/2*self.carAccel*(time-newTime)**2
                 self.speed=self.speed-self.carAccel*(time-newTime)
@@ -85,10 +85,10 @@ class car:
                 self.carPosition+=self.speed*(time-self.carTime)-1/2*self.carAccel*(time-self.carTime)**2
                 self.speed=self.speed-self.carAccel*(time-self.carTime)
             else:
-            newTime=(crosswalkPosition-self.stoppingDistance-self.carPosition)/car.speed+self.carTime
-            self.carPosition=crosswalkPosition-self.stoppingDistance
-            self.carPosition+=self.speed*(time-newTime)-1/2*self.carAccel*(time-newTime)**2
-            self.speed=self.speed-self.carAccel*(time-newTime)
+                newTime=(crosswalkPosition-self.stoppingDistance-self.carPosition)/car.speed+self.carTime
+                self.carPosition=crosswalkPosition-self.stoppingDistance
+                self.carPosition+=self.speed*(time-newTime)-1/2*self.carAccel*(time-newTime)**2
+                self.speed=self.speed-self.carAccel*(time-newTime)
         else:
             self.carPosition+=self.speed*(time-self.carTime)
 
@@ -103,6 +103,7 @@ class car:
         elif lightState=="Red":
             self.redState(time)
         self.carTime=time
+
     def carExit(self,time):
         if self.carPosition>=7*330+46*6:
             newTime=(self.carPosition-7*330+46*6)/self.speed
