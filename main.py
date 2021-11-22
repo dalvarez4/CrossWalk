@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import numpy as np
 import car
 import ped
 import events
@@ -19,15 +20,37 @@ lambda_c = 4
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
+    #meta events to keep track of
+    ped_delay_mu = 0
+    car_delay_mu = 0
+    ped_delay_sigma = 0
+    car_delay_sigma = 0
     #functions to help with sim
+
+        #pass Standard deviation first then update the mean
+    def updateMean(oldMean,newPoint,N):
+        newMean=oldMean+1/(N+1)*(newPoint-oldMean)
+        return newMean
+    def updateSTD(oldMean,oldSTD,newPoint,N):
+        newSTD=np.sqrt(oldSTD**2+(N*(oldMean-newPoint)**2-(N+1)*oldSTD**2)/(N+1)**2)
+        return newSTD
+
+
     def setLight4Cars(time):
-        for car in cars:
-            car.updateYellowTime(time)
-    def lightHandles(lightColor,time):
-        for car in cars:
-            car.carStates(lightColor,time)
-            if car.carExit:
-                cars.remove(car)
+        for carro in cars:
+            carro.updateYellowTime(time)
+    def lightHandles(lightColor,time,car_delay_sigma,car_delay_mu):
+        for carro in cars:
+            carro.carStates(lightColor,time)
+            if carro.carExit:
+                car_delay_sigma = updateSTD(car_delay_mu, car_delay_sigma, carro.carExit, cars_passed)
+                car_delay_mu = updateMean(car_delay_mu, carro.carExit, cars_passed)
+                cars.remove(carro)
+
+
+
+
+
 
 
 
@@ -58,8 +81,8 @@ if __name__ == '__main__':
     ped_arr, ped_speed = map(float, ped_dist.readline().split(' '))
 
     '''loop idea'''
-    ped_delay_mu = 0
-    car_delay = 0
+
+
     max_cars = 200
     cars_passed = 0
     event_list = events.event_list()
@@ -103,15 +126,15 @@ if __name__ == '__main__':
                 event_list.insert(events.event("car_spawn", ped.Exponential(lambda_c / 60 / 2, x = car_arr) + time))
         elif event.name == "r_exp":
             sec_until_green_exp = 35
-            lightHandles("Red",time)
+            lightHandles("Red",time,car_delay_sigma,car_delay_mu)
         elif event.name == "y_exp":
 
-            lightHandles("Yellow",time)
+            lightHandles("Yellow",time,car_delay_sigma,car_delay_mu)
             #stranded peds are waiting for the next red not the current one
             sec_until_green_exp == 18 + 35
         elif event.name == "g_exp":
             setLight4Cars(time)
-            lightHandles("Green",time)
+            lightHandles("Green",time,car_delay_sigma,car_delay_mu)
             #pushed button during yellow light
             sec_until_green_exp == 0
         #check if its a single ped event otherwise
