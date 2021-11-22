@@ -14,11 +14,22 @@ ped_dist = []
 button_dist = []
 
 lambda_p = 3
+lambda_c = 4
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    car1=car.car(20)
-    print(car1.carLength)
+
+    #functions to help with sim
+    def setLight4Cars(time):
+        for car in cars:
+            car.updateYellowTime(time)
+    def lightHandles(lightColor,time):
+        for car in cars:
+            car.carStates(lightColor,time)
+            if car.carExit:
+                cars.remove(car)
+
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
@@ -54,7 +65,9 @@ if __name__ == '__main__':
     event_list = events.event_list()
     #spawn cars and first ped
     event_list.insert(events.event("ped_spawn", ped.Exponential(2 * lambda_p, x = ped_arr)))
+    event_list.insert(events.event("car_spawn",ped.Exponential(2*lambda_c, x = car_arr)))
     peds = {}
+    cars=[]
     time = 0
     last_time = 0
     #start on fresh green
@@ -67,6 +80,7 @@ if __name__ == '__main__':
     total_cars = 0
     while cars_passed < arrivals and peds_crossed < arrivals:
         event = event_list.next()
+        time = event.arrival_time
         sec_until_green_exp = sec_until_green_exp - (time - last_time)
         if event.name == 'ped_spawn':
             curr_ped = ped.ped(time, event, event_list, total_peds, ped.Uniform(x = ped_speed))
@@ -80,12 +94,24 @@ if __name__ == '__main__':
             peds_crossed += 1
             new_delay = peds.pop(event.id).update(event.name, time, event_list)
             ped_delay_mu = ped_delay_mu + (1/(peds_crossed)) * (new_delay - ped_delay_mu)
+        elif event.name == "car_spawn":
+            curr_car = car.car(ped.Uniform(25, 35, x=car_speed), time)
+            cars.append(curr_car)
+            total_cars += 1
+            if total_cars < arrivals:
+                car_arr, car_speed = map(float, auto_dist.readline().split(' '))
+                event_list.insert(events.event("car_spawn", ped.Exponential(lambda_c / 60 / 2, x = car_arr) + time))
         elif event.name == "r_exp":
             sec_until_green_exp = 35
+            lightHandles("Red",time)
         elif event.name == "y_exp":
+
+            lightHandles("Yellow",time)
             #stranded peds are waiting for the next red not the current one
             sec_until_green_exp == 18 + 35
         elif event.name == "g_exp":
+            setLight4Cars(time)
+            lightHandles("Green",time)
             #pushed button during yellow light
             sec_until_green_exp == 0
         #check if its a single ped event otherwise
