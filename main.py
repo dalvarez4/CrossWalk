@@ -39,7 +39,7 @@ if __name__ == '__main__':
     def setLight4Cars(time):
         for carro in cars:
             carro.updateYellowTime(time)
-    def lightHandles(lightColor,time,car_delay_sigma,car_delay_mu):
+    def lightHandles(lightColor,time,car_delay_sigma,car_delay_mu,cars_passed):
         for carro in cars:
             carro.carStates(lightColor,time,cars_passed)
             if carro.carExit:
