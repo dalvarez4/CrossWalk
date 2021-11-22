@@ -150,7 +150,7 @@ class ped:
             if self.walked:
                 #for peds no longer waiting reduce the count
                 self.peds_waiting -= 1
-                self.peds_walked += 1
+                self.peds_crossing += 1
 
                 #if can walk add a ped exit event
                 event_list.insert(events.ped_event("ped_exit", crossed_at, self.id))
@@ -191,3 +191,24 @@ class ped:
             return self.total_delay
         self.last_time = time
         return event_list
+#print("test")
+#test_event = events.event("test", 5)
+#print("worked")
+#test_list = events.event_list()
+#test_list.insert(test_event)
+#print(test_list)
+#events = [events.event("test", 20), events.event("test", 30), events.event("test", 60), events.event("test", 20), events.event("test", 1)]
+#for event in events:
+#    test_list.insert(event)
+#    print(test_list)
+#
+#for event in events:
+#    test_list.next()
+#    print(test_list)
+
+
+test_list = events.event_list()
+test_ped = ped(0, 'spawn', test_list, 0, .5, 'filler')
+test_list = test_ped.update('y_exp', 100000, test_list, signal_left = 0)
+print(test_ped.speed, test_ped.pos, test_ped.button_pos)
+print(test_list)

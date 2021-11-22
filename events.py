@@ -87,7 +87,7 @@ class event_list:
         return s
             
     
-test_event = event("test", 5)
+#test_event = event("test", 5)
 
 #orig = node(test_event, 'l', 'r', 'p')
 #maybe_copy = orig
@@ -105,15 +105,15 @@ test_event = event("test", 5)
 
 #event_array = np.array([test_event, test_event, test_event], dtype = event)
 #print(np.pad(event_array, [(0, 3)], mode = 'constant', constant_values = None))
-
-test_list = event_list()
-test_list.insert(test_event)
-print(test_list)
-events = [event("test", 20), event("test", 30), event("test", 60), event("test", 20), event("test", 1)]
-for event in events:
-    test_list.insert(event)
-    print(test_list)
-
-for event in events:
-    test_list.next()
-    print(test_list)
+#test_event = event("test", 5)
+#test_list = event_list()
+#test_list.insert(test_event)
+#print(test_list)
+#events = [event("test", 20), event("test", 30), event("test", 60), event("test", 20), event("test", 1)]
+#for event in events:
+#    test_list.insert(event)
+#    print(test_list)
+#
+#for event in events:
+#    test_list.next()
+#    print(test_list)
