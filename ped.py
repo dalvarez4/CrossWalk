@@ -2,11 +2,11 @@ import random
 import numpy as np
 import events
 
-def Uniform(a = 2.6,b = 4.1):
-    return a + (b - a) * random.random()
+def Uniform(a = 2.6,b = 4.1, x = random.random()):
+    return a + (b - a) * x
 
-def Exponential(mew):
-    return -mew * np.log(1 - random.random())
+def Exponential(mew, x = random.random()):
+    return -mew * np.log(1 - x)
 
 
 
@@ -68,15 +68,16 @@ def can_cross(speed, distance, crossed):
     if crossed >= 20:
         return False
     return (distance + cw_peds) / speed <= signal_clock_remainder
-def will_press(peds_waiting, pushed, impatient = False, stranded = False):
+def will_press(peds_waiting, pushed, trace, impatient = False, stranded = False):
     if pushed:
         return False
     if impatient:
         return True
+    x = float(trace.readline())
     if peds_waiting == 0 or stranded:
-        return Uniform(0, 16) <= 15
+        return Uniform(0, 16, x) <= 15
     else:
-        return Uniform(0, peds_waiting + 1) <= peds_waiting
+        return Uniform(0, peds_waiting + 1, x) <= peds_waiting
 
 class ped:
 
@@ -89,13 +90,15 @@ class ped:
     #trace values for button presses
     button_trace = []
 
-    def __init__(self, time, event, event_list, num_peds, speed):
+    def __init__(self, time, event, event_list, num_peds, speed, button_trace):
+        if self.button_trace == []:
+            self.button_trace = button_trace
         #distance until they are at the button
         #unsure what the width of the side streets are, assume side streets are same width as the main street as only one street width is stated
         #have to cross a half block, side street, and another half block to reach the button
         self.button_pos = B/2 * + S + B/2
         self.delay_start = None
-        self.speed = Uniform(2.6, 4.1)
+        #self.speed = Uniform(2.6, 4.1)
         self.speed = speed
         #just gonna worry about spawning on one side for now since peds don't collide
         #might want to worry about the next spawn event in the main loop to ensure that ID's stay unique
@@ -155,7 +158,7 @@ class ped:
                 #calculate delay if allowed to walk
                 if self.delay_start != None:
                     self.total_delay = time - self.delay_start
-            elif not self.walked and self.peds_crossing > 20 and will_press(self.peds_waiting, self.pushed,  stranded=True):
+            elif not self.walked and self.peds_crossing > 20 and will_press(self.peds_waiting, self.pushed, trace = self.button_trace, stranded=True):
                 event_list = self.push_button(time, event_list, signal_left)
 
         if event == 'r_exp' or event == 'g_exp':
@@ -174,14 +177,14 @@ class ped:
             self.peds_waiting += 1
             #add the impatient event after a minute of at the button
             event_list = event_list.insert(events.ped_event("impatient", time + 60, self.id))
-            if will_press(self.peds_waiting, self.pushed):
+            if will_press(self.peds_waiting, self.pushed, trace = self.button_trace):
                 event_list = self.push_button(time, event_list, signal_left)
 
         if event == "impatient":
             if self.walked:
                 #do nothing if already walked
                 return None
-            if will_press(self.peds_waiting, self.pushed, impatient=True):
+            if will_press(self.peds_waiting, self.pushed, trace = self.button_trace, impatient=True):
                 event_list = self.push_button(time, event_list, signal_left)
         if event == "ped_exit":
             #clear impatient event if it hasn't happened yet or just keep it in a skip it later if you want

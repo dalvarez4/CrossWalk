@@ -11,7 +11,7 @@ auto_dist = []
 ped_dist = []
 button_dist = []
 
-
+lambda_p = 3
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -40,6 +40,10 @@ if __name__ == '__main__':
     except:
         exit("Invalid button press file path")
 
+    
+    car_arr, car_speed = map(float, auto_dist.readline().split(' '))
+    ped_arr, ped_speed = map(float, ped_dist.readline().split(' '))
+
     '''loop idea'''
     ped_delay = 0
     car_delay = 0
@@ -47,7 +51,7 @@ if __name__ == '__main__':
     cars_passed = 0
     event_list = events.event_list()
     #spawn cars and first ped
-    event_list.insert(events.event("ped_spawn", ped.Uniform()))
+    event_list.insert(events.event("ped_spawn", ped.Exponential(2 * lambda_p, x = ped_arr)))
     peds = {}
     time = 0
     last_time = 0
@@ -56,14 +60,15 @@ if __name__ == '__main__':
     last_signal_time = 0
     #when will the next green light end
     sec_until_green_exp = 35
-    while cars_passed < max_cars:
+    while cars_passed < arrivals:
         event = event_list.next()
         sec_until_green_exp = sec_until_green_exp - (time - last_time)
         if event.name == 'ped_spawn':
-            curr_ped = ped.ped(time, event, event_list, len(peds))
+            curr_ped = ped.ped(time, event, event_list, len(peds), ped.Uniform(x = ped_speed))
             event_list.insert(events.ped_event("at_button", curr_ped.button_time, curr_ped.id))
             peds[len(peds) + 1] = curr_ped
-            event_list.insert(events.event("ped_spawn", ped.Uniform() + time))
+            ped_arr, ped_speed = map(float, ped_dist.readline().split(' '))
+            event_list.insert(events.event("ped_spawn", ped.Exponential(2 * lambda_p, x = ped_arr) + time))
         elif event.name == "ped_exit":
             ped_delay += peds.pop(event.id).update(event.name, time, event_list)
         elif event.name == "r_exp":
