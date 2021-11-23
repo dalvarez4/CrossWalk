@@ -108,12 +108,13 @@ if __name__ == '__main__':
         sec_until_green_exp = sec_until_green_exp - (time - last_time)
         if event.name == 'ped_spawn':
             curr_ped = ped.ped(time, event, event_list, total_peds, ped.Uniform(x = ped_speed), button_dist)
+            print(curr_ped.speed)
             event_list.insert(events.ped_event("at_button", curr_ped.button_time, curr_ped.id))
             peds[total_peds] = curr_ped
             total_peds += 1
             if total_peds < arrivals:
                 ped_arr, ped_speed = map(float, ped_dist.readline().split(' '))
-                event_list.insert(events.event("ped_spawn", ped.Exponential(lambda_p / 60 / 2, x = ped_arr) + time))
+                event_list.insert(events.event("ped_spawn", ped.Exponential(2 * lambda_p, x = ped_arr) + time))
         elif event.name == "ped_exit":
             peds_crossed += 1
             new_delay = peds.pop(event.id).update(event.name, time, event_list)
@@ -125,7 +126,7 @@ if __name__ == '__main__':
             total_cars += 1
             if total_cars < arrivals:
                 car_arr, car_speed = map(float, auto_dist.readline().split(' '))
-                event_list.insert(events.event("car_spawn", ped.Exponential(lambda_c / 60 / 2, x = car_arr) + time))
+                event_list.insert(events.event("car_spawn", ped.Exponential(2 * lambda_c, x = car_arr) + time))
         elif event.name == "r_exp":
             sec_until_green_exp = 35
             car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Red",time,car_delay_sigma,car_delay_mu,cars_passed)
@@ -138,7 +139,7 @@ if __name__ == '__main__':
             setLight4Cars(time)
             car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Green",time,car_delay_sigma,car_delay_mu,cars_passed)
             #pushed button during yellow light
-            sec_until_green_exp == 0
+            sec_until_green_exp == 35 + 18 + 8
         #check if its a single ped event otherwise
         #update peds in the order they arrived
         if isinstance(event, events.ped_event):

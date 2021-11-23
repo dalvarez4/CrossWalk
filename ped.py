@@ -74,6 +74,7 @@ def will_press(peds_waiting, pushed, trace, impatient = False, stranded = False)
     if impatient:
         return True
     x = float(trace.readline())
+    #peds waiting -1?
     if peds_waiting == 0 or stranded:
         return Uniform(0, 16, x) <= 15
     else:
@@ -91,12 +92,12 @@ class ped:
     button_trace = []
 
     def __init__(self, time, event, event_list, num_peds, speed, button_trace):
-        if self.button_trace == []:
-            self.button_trace = button_trace
+        if ped.button_trace == []:
+            ped.button_trace = button_trace
         #distance until they are at the button
         #unsure what the width of the side streets are, assume side streets are same width as the main street as only one street width is stated
         #have to cross a half block, side street, and another half block to reach the button
-        self.button_pos = B/2 * + S + B/2
+        self.button_pos = B/2 + S + B/2
         self.delay_start = None
         #self.speed = Uniform(2.6, 4.1)
         self.speed = speed
@@ -108,7 +109,7 @@ class ped:
         #calculate time for button event
         self.button_time = self.button_pos / self.speed
         #event_list.insert(events.ped_event("at_button", self.button_time, self.id))
-        self.id = num_peds + 1
+        self.id = num_peds
         self.walked = False
         self.at_button = False
         self.pos = 0
@@ -120,7 +121,15 @@ class ped:
 
     def push_button(self, time, event_list, signal_left):
         #assuming cross walk works instantanuosly on a stale (with yellow delay)
-        event_list.insert(events.event("g_exp", time + signal_left))
+        print(signal_left)
+        if(signal_left <= 0):
+            event_list.insert(events.event("g_exp", time))
+            event_list.insert(events.event("y_exp", time + 8))
+            event_list.insert(events.event("r_exp", time + 8 + 18))
+        else: 
+            event_list.insert(events.event("g_exp", time + signal_left))
+            event_list.insert(events.event("y_exp", time + signal_left + 8))
+            event_list.insert(events.event("r_exp", time + signal_left + 18))
         return event_list
     
     def update(self, event, time, event_list, signal_left = 0):
@@ -130,7 +139,7 @@ class ped:
             self.pos = self.button_pos
         if event == 'y_exp':
             #reset crosswalk status
-            self.pushed = False
+            ped.pushed = False
             #should be allowed to walk even if not right at button, anywhere within that 24 foot width of the crosswalk
             '''only first 20 pedestrians that can make it will cross determine who is checked as available to cross in main loop'''
             '''first 20 I'm assuming is first 20 to spawn in who can make it, not necessarily the first 20 people who make it to the button itself'''
@@ -138,7 +147,7 @@ class ped:
             crossed_at = None
             #check where the pedestrian currently is
             #button is in the middle of the crosswalk so they just need to be within twelve feet of the button to be at the crosswalk
-            if self.peds_crossing <=20 and (self.at_button or self.button_pos - self.pos <= 12):
+            if ped.peds_crossing <=20 and (self.at_button or self.button_pos - self.pos <= 12):
                 #anyone at the button or at the crosswalk should be allowed to walk
                 self.walked = True
                 crossed_at = S / self.speed
@@ -149,8 +158,8 @@ class ped:
 
             if self.walked:
                 #for peds no longer waiting reduce the count
-                self.peds_waiting -= 1
-                self.peds_crossing += 1
+                ped.peds_waiting -= 1
+                ped.peds_crossing += 1
 
                 #if can walk add a ped exit event
                 event_list.insert(events.ped_event("ped_exit", crossed_at, self.id))
@@ -158,33 +167,33 @@ class ped:
                 #calculate delay if allowed to walk
                 if self.delay_start != None:
                     self.total_delay = time - self.delay_start
-            elif not self.walked and self.peds_crossing > 20 and will_press(self.peds_waiting, self.pushed, trace = self.button_trace, stranded=True):
+            elif not self.walked and ped.peds_crossing > 20 and will_press(ped.peds_waiting, ped.pushed, trace = ped.button_trace, stranded=True):
                 event_list = self.push_button(time, event_list, signal_left)
 
         if event == 'r_exp' or event == 'g_exp':
             '''this will be anytime the light is not red'''
             #reset the count of peds that have crossed
-            self.peds_crossing = 0
+            ped.peds_crossing = 0
 
 
         if event == "at_button":
             if self.walked:
                 #do nothing if already walked
-                return None
+                return event_list
             self.at_button = True
             self.delay_start = time
             #increment the amount of peds waiting
-            self.peds_waiting += 1
             #add the impatient event after a minute of at the button
             event_list.insert(events.ped_event("impatient", time + 60, self.id))
-            if will_press(self.peds_waiting, self.pushed, trace = self.button_trace):
+            if will_press(ped.peds_waiting, ped.pushed, trace = ped.button_trace):
                 event_list = self.push_button(time, event_list, signal_left)
+            ped.peds_waiting += 1
 
         if event == "impatient":
             if self.walked:
                 #do nothing if already walked
                 return None
-            if will_press(self.peds_waiting, self.pushed, trace = self.button_trace, impatient=True):
+            if will_press(ped.peds_waiting, ped.pushed, trace = ped.button_trace, impatient=True):
                 event_list = self.push_button(time, event_list, signal_left)
         if event == "ped_exit":
             #clear impatient event if it hasn't happened yet or just keep it in a skip it later if you want
@@ -207,8 +216,8 @@ class ped:
 #    print(test_list)
 
 
-test_list = events.event_list()
-test_ped = ped(0, 'spawn', test_list, 0, .5, 'filler')
-test_list = test_ped.update('y_exp', 100000, test_list, signal_left = 0)
-print(test_ped.speed, test_ped.pos, test_ped.button_pos)
-print(test_list)
+#test_list = events.event_list()
+#test_ped = ped(0, 'spawn', test_list, 0, .5, 'filler')
+#test_list = test_ped.update('y_exp', 100000, test_list, signal_left = 0)
+#print(test_ped.speed, test_ped.pos, test_ped.button_pos)
+#print(test_list)

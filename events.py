@@ -54,7 +54,7 @@ class event_list:
         self.to_insert += 1
         parent_index = self.parent(index)
         while parent_index >= 0 and self.heap[parent_index] > self.heap[index]:
-            print(self.heap[index], self.heap[parent_index])
+            #print(self.heap[index], self.heap[parent_index])
             to_swap = self.heap[parent_index]
             self.heap[parent_index] = self.heap[index]
             self.heap[index] = to_swap
