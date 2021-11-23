@@ -32,7 +32,7 @@ if __name__ == '__main__':
         newMean=oldMean+1/(N+1)*(newPoint-oldMean)
         return newMean
     def updateSTD(oldMean,oldSTD,newPoint,N):
-        newSTD=np.sqrt(oldSTD**2+(N*(oldMean-newPoint)**2-(N+1)*oldSTD**2)/(N+1)**2)
+        newSTD=oldSTD**2+(N*(oldMean-newPoint)**2-(N+1)*oldSTD**2)/(N+1)**2
         return newSTD
 
 
@@ -148,7 +148,7 @@ if __name__ == '__main__':
             for key in peds.keys.sort():
                 event_list = peds[key].update(event.name, time, event_list, signal_left = sec_until_green_exp)
     print(ped_delay_mu)
-    #print("OUTPUT ",)
+    #print("OUTPUT "," Delay Auto mean: ",car_delay_mu," Delay auto STD: ", car_delay_sigma," Delay Pedestrians Mean: ",ped_delay_mu)
     exit(0)
 
 
