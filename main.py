@@ -32,7 +32,9 @@ if __name__ == '__main__':
         newMean=oldMean+1/(N+1)*(newPoint-oldMean)
         return newMean
     def updateSTD(oldMean,oldSTD,newPoint,N):
-        newSTD=(oldSTD**2)+(N*((oldMean-newPoint)**2)-(N+1)*oldSTD**2)/((N+1)**2)
+        print(oldMean, oldSTD, newPoint, N)
+        newSTD=(oldSTD)+(N*((oldMean-newPoint)**2)-(N+1)*oldSTD)/((N+1)**2)
+        print(newSTD)
         return newSTD
 
 
@@ -42,7 +44,7 @@ if __name__ == '__main__':
     def lightHandles(lightColor,time,car_delay_sigma,car_delay_mu,cars_passed):
         for carro in cars:
             carro.carStates(lightColor,time)
-            if carro.carExit:
+            if carro.carExit(time):
                 car_delay_sigma = updateSTD(car_delay_mu, car_delay_sigma, carro.carExit(time), cars_passed)
                 car_delay_mu = updateMean(car_delay_mu, carro.carExit(time), cars_passed)
                 cars.remove(carro)
@@ -78,8 +80,8 @@ if __name__ == '__main__':
     except:
         exit("Invalid button press file path")
 
-    car_arr, car_speed = map(lambda x: float(x), auto_dist.readline().split(' '))
-    ped_arr, ped_speed = map(lambda x: float(x), ped_dist.readline().split(' '))
+    car_arr, car_speed = float(auto_dist.readline()), float(auto_dist.readline())
+    ped_arr, ped_speed = float(ped_dist.readline()), float(ped_dist.readline())
 
     '''loop idea'''
 
@@ -108,12 +110,12 @@ if __name__ == '__main__':
         sec_until_green_exp = sec_until_green_exp - (time - last_time)
         if event.name == 'ped_spawn':
             curr_ped = ped.ped(time, event, event_list, total_peds, ped.Uniform(x = ped_speed), button_dist)
-            print(curr_ped.speed)
+            #print(curr_ped.speed)
             event_list.insert(events.ped_event("at_button", curr_ped.button_time, curr_ped.id))
             peds[total_peds] = curr_ped
             total_peds += 1
             if total_peds < arrivals:
-                ped_arr, ped_speed = map(float, ped_dist.readline().split(' '))
+                ped_arr, ped_speed = float(ped_dist.readline()), float(ped_dist.readline())
                 event_list.insert(events.event("ped_spawn", ped.Exponential(2 * lambda_p, x = ped_arr) + time))
         elif event.name == "ped_exit":
             peds_crossed += 1
@@ -125,7 +127,7 @@ if __name__ == '__main__':
             cars.append(curr_car)
             total_cars += 1
             if total_cars < arrivals:
-                car_arr, car_speed = map(float, auto_dist.readline().split(' '))
+                car_arr, car_speed = float(auto_dist.readline()), float(auto_dist.readline())
                 event_list.insert(events.event("car_spawn", ped.Exponential(2 * lambda_c, x = car_arr) + time))
         elif event.name == "r_exp":
             sec_until_green_exp = 35

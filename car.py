@@ -44,7 +44,7 @@ class car:
         if self.speed==self.carMaxSpeed:
             self.carPosition=self.carPosition+self.speed*(time-self.carTime)
         else:
-            accelTime=self.findTime2GetBack2Speed(time)
+            accelTime=self.findTime2GetBack2Speed()
             self.carPosition=self.carPosition+self.speed*(accelTime)+(1/2*self.carAccel*(accelTime)**2)
             self.speed=self.carMaxSpeed
             self.carPosition+=(time-(accelTime+self.carTime))*self.speed
@@ -85,7 +85,7 @@ class car:
                 self.carPosition+=self.speed*(time-self.carTime)-1/2*self.carAccel*(time-self.carTime)**2
                 self.speed=self.speed-self.carAccel*(time-self.carTime)
             else:
-                newTime=(crosswalkPosition-self.stoppingDistance-self.carPosition)/car.speed+self.carTime
+                newTime=(crosswalkPosition-self.stoppingDistance-self.carPosition)/self.speed+self.carTime
                 self.carPosition=crosswalkPosition-self.stoppingDistance
                 self.carPosition+=self.speed*(time-newTime)-1/2*self.carAccel*(time-newTime)**2
                 self.speed=self.speed-self.carAccel*(time-newTime)

@@ -121,7 +121,7 @@ class ped:
 
     def push_button(self, time, event_list, signal_left):
         #assuming cross walk works instantanuosly on a stale (with yellow delay)
-        print(signal_left)
+        #print(signal_left)
         if(signal_left <= 0):
             event_list.insert(events.event("g_exp", time))
             event_list.insert(events.event("y_exp", time + 8))
