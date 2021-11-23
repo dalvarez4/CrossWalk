@@ -160,6 +160,7 @@ if __name__ == '__main__':
             if event.id in peds.keys():
                 peds[event.id].update(event.name, time, event_list, signal_left = sec_until_green_exp)
         elif len(list(peds.keys())) > 0:
+            '''need to check the order that they make it to the button, not spawn in '''
             keys = list(peds.keys())
             keys.sort()
             for key in keys:
