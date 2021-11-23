@@ -41,7 +41,7 @@ if __name__ == '__main__':
             carro.updateYellowTime(time)
     def lightHandles(lightColor,time,car_delay_sigma,car_delay_mu,cars_passed):
         for carro in cars:
-            carro.carStates(lightColor,time,cars_passed)
+            carro.carStates(lightColor,time)
             if carro.carExit:
                 car_delay_sigma = updateSTD(car_delay_mu, car_delay_sigma, carro.carExit, cars_passed)
                 car_delay_mu = updateMean(car_delay_mu, carro.carExit, cars_passed)
