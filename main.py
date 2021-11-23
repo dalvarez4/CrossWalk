@@ -32,7 +32,7 @@ if __name__ == '__main__':
         newMean=oldMean+1/(N+1)*(newPoint-oldMean)
         return newMean
     def updateSTD(oldMean,oldSTD,newPoint,N):
-        newSTD=np.sqrt(oldSTD**2+(N*(oldMean-newPoint)**2-(N+1)*oldSTD**2)/(N+1)**2)
+        newSTD=(oldSTD**2)+(N*((oldMean-newPoint)**2)-(N+1)*oldSTD**2)/((N+1)**2)
         return newSTD
 
 
@@ -41,10 +41,10 @@ if __name__ == '__main__':
             carro.updateYellowTime(time)
     def lightHandles(lightColor,time,car_delay_sigma,car_delay_mu,cars_passed):
         for carro in cars:
-            carro.carStates(lightColor,time,cars_passed)
+            carro.carStates(lightColor,time)
             if carro.carExit:
-                car_delay_sigma = updateSTD(car_delay_mu, car_delay_sigma, carro.carExit, cars_passed)
-                car_delay_mu = updateMean(car_delay_mu, carro.carExit, cars_passed)
+                car_delay_sigma = updateSTD(car_delay_mu, car_delay_sigma, carro.carExit(time), cars_passed)
+                car_delay_mu = updateMean(car_delay_mu, carro.carExit(time), cars_passed)
                 cars.remove(carro)
                 cars_passed+=1
         return car_delay_mu,car_delay_sigma,cars_passed
@@ -149,7 +149,7 @@ if __name__ == '__main__':
             keys.sort()
             for key in keys:
                 event_list = peds[key].update(event.name, time, event_list, signal_left = sec_until_green_exp)
-    print(ped_delay_mu)
+    print(car_delay_mu, car_delay_sigma, ped_delay_mu)
     #print("OUTPUT ",)
     exit(0)
 
