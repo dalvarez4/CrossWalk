@@ -108,7 +108,7 @@ class car:
         if self.carPosition>=7*330+46*6:
             newTime=(self.carPosition-7*330+46*6)/self.speed
             totalTime=time-newTime
-            return totalTime
+            return totalTime-self.carIdealExitTime
         else:
             return False
 
