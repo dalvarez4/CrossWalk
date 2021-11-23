@@ -33,7 +33,7 @@ if __name__ == '__main__':
         return newMean
     def updateSTD(oldMean,oldSTD,newPoint,N):
         print(oldMean, oldSTD, newPoint, N)
-        newSTD=oldSTD+(N-1/N)*(newPoint-oldMean)**2
+        newSTD=oldSTD+(N/N+1)*(newPoint-oldMean)**2
         print(newSTD)
         return newSTD
 
@@ -125,7 +125,7 @@ if __name__ == '__main__':
                     ped_arr, ped_speed = float(ped_dist.readline()), float(ped_dist.readline())
                 except:
                     exit("Pedestrian trace ended prematurely")
-                event_list.insert(events.event("ped_spawn", ped.Exponential(2 * lambda_p / 60, x = ped_arr) + time))
+                event_list.insert(events.event("ped_spawn", ped.Exponential(60/(2 * lambda_p) , x = ped_arr) + time))
         elif event.name == "ped_exit":
             peds_crossed += 1
             new_delay = peds.pop(event.id).update(event.name, time, event_list)
@@ -140,7 +140,7 @@ if __name__ == '__main__':
                     car_arr, car_speed = float(auto_dist.readline()), float(auto_dist.readline())
                 except:
                     exit("Auto trace ended prematurely")
-                event_list.insert(events.event("car_spawn", ped.Exponential(2 * lambda_c / 60, x = car_arr) + time))
+                event_list.insert(events.event("car_spawn", ped.Exponential(60/(2 * lambda_c) , x = car_arr) + time))
         elif event.name == "r_exp":
             sec_until_green_exp = 35
             car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Red",time,car_delay_sigma,car_delay_mu,cars_passed)
