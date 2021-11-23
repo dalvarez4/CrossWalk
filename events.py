@@ -121,77 +121,78 @@ class event_list:
 #print(test_list)
 #events = [event("test", 20), event("test", 30), event("test", 60), event("test", 20), event("test", 1)]
 
-import random
-def Uniform(a = 2.6,b = 4.1, x = -1):
-    if x == -1:
-        x = random.random()
-    return a + (b - a) * x
-
-
-num_runs = 1000
-
-
-num = 500
-avg_iter = 0
-
-all_inserts = []
-all_nexts = []
-
-inserts = []
-nexts = []
-elements = []
-#for event in events:
-for run in range(5, num_runs):
-    #elements.append(run)
-    test_event = event("test", Uniform(0, 50))
-    test_list = event_list()
-    test_list.insert(test_event)
-    print(run)
-    inserts = []
-    nexts = []
-    for x in range(5, num):
-        event_list.count_iter = 0
-        test_list.insert(event("test", Uniform(0, 50)))
-        #avg_iter = avg_iter + (1/(x + 1)) * (event_list.count_iter - avg_iter)        
-        inserts.append(event_list.count_iter)
-        #print(event_list.count_iter)
-        #print(test_list)
-    #
-    all_inserts.append(inserts)
-
-    avg_iter = 0
-    for x in range(5, num):
-        event_list.count_iter = 0
-        test_list.next()
-        #avg_iter = avg_iter + (1/(x + 1)) * (event_list.count_iter - avg_iter)
-        nexts.append(event_list.count_iter)
-    #    print(test_list)
-    all_nexts.append(nexts)
-
-#print(len(inserts), len(nexts), len(elements))
-avg_inserts = []
-avg_nexts = []
-
-for x in range(5, num):
-    x = x - 5
-    avg_insert = 0
-    avg_next = 0
-    for i in range(len(all_inserts)):
-        #print(all_inserts[i], x, all_inserts[i][x])
-        avg_insert = avg_insert + (1/(i + 1)) * (all_inserts[i][x] - avg_insert)
-        avg_next = avg_next + (1/(i + 1)) * (all_nexts[i][x] - avg_next)
-    avg_inserts.append(avg_insert)
-    avg_nexts.append(avg_next)
-
-
-import matplotlib.pyplot as plt
-
-elements = [x for x in range(5, num)]
-
-plt.scatter(elements, avg_inserts)
-
-plt.show()
-
-plt.scatter(elements, avg_nexts)
-
-plt.show()
+#import random
+#def Uniform(a = 2.6,b = 4.1, x = -1):
+#    if x == -1:
+#        x = random.random()
+#    return a + (b - a) * x
+#
+#
+#num_runs = 1000
+#
+#
+#num = 500
+#avg_iter = 0
+#
+#all_inserts = []
+#all_nexts = []
+#
+#inserts = []
+#nexts = []
+#elements = []
+##for event in events:
+#for run in range(5, num_runs):
+#    #elements.append(run)
+#    test_event = event("test", Uniform(0, 50))
+#    test_list = event_list()
+#    test_list.insert(test_event)
+#    print(run)
+#    inserts = []
+#    nexts = []
+#    for x in range(5, num):
+#        event_list.count_iter = 0
+#        test_list.insert(event("test", Uniform(0, 50)))
+#        #avg_iter = avg_iter + (1/(x + 1)) * (event_list.count_iter - avg_iter)        
+#        inserts.append(event_list.count_iter)
+#        #print(event_list.count_iter)
+#        #print(test_list)
+#    #
+#    all_inserts.append(inserts)
+#
+#    avg_iter = 0
+#    for x in range(5, num):
+#        event_list.count_iter = 0
+#        test_list.next()
+#        #avg_iter = avg_iter + (1/(x + 1)) * (event_list.count_iter - avg_iter)
+#        nexts.append(event_list.count_iter)
+#    #    print(test_list)
+#    all_nexts.append(nexts)
+#
+##print(len(inserts), len(nexts), len(elements))
+#avg_inserts = []
+#avg_nexts = []
+#
+#for x in range(5, num):
+#    x = x - 5
+#    avg_insert = 0
+#    avg_next = 0
+#    for i in range(len(all_inserts)):
+#        #print(all_inserts[i], x, all_inserts[i][x])
+#        avg_insert = avg_insert + (1/(i + 1)) * (all_inserts[i][x] - avg_insert)
+#        avg_next = avg_next + (1/(i + 1)) * (all_nexts[i][x] - avg_next)
+#    avg_inserts.append(avg_insert)
+#    avg_nexts.append(avg_next)
+#
+#
+#import matplotlib.pyplot as plt
+#
+#elements = [x for x in range(5, num)]
+#
+#plt.scatter(elements, avg_inserts)
+#
+#plt.show()
+#
+#plt.scatter(elements, avg_nexts)
+#
+#plt.show()
+#
