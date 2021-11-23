@@ -42,6 +42,9 @@ class event_list:
     def parent(self, i):
         return int(np.floor((i - 1) / 2))
 
+    def length(self):
+        return len(self.heap)
+
     def insert(self, event):
         #check first if array needs to padded
         if self.to_insert == self.heap.shape[0]:
@@ -65,7 +68,7 @@ class event_list:
         index = 0
         r = self.child_r(index)
         l = self.child_l(index)
-        while (self.heap[l] != None and self.heap[index] > self.heap[l]) or (self.heap[r] != None and self.heap[index] > self.heap[r]):
+        while (l < len(self.heap) and self.heap[l] != None and self.heap[index] > self.heap[l]) or (r < len(self.heap) and self.heap[r] != None and self.heap[index] > self.heap[r]):
             to_swap = None
             if self.heap[r] == None or self.heap[l] < self.heap[r]:
                 to_swap = l

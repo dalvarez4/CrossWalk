@@ -5,6 +5,7 @@
 
 test_traces/
 __pycache__/
+.vscode/
 
 
 ### VisualStudioCode ###

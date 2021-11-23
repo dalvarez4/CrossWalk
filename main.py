@@ -107,7 +107,7 @@ if __name__ == '__main__':
         time = event.arrival_time
         sec_until_green_exp = sec_until_green_exp - (time - last_time)
         if event.name == 'ped_spawn':
-            curr_ped = ped.ped(time, event, event_list, total_peds, ped.Uniform(x = ped_speed))
+            curr_ped = ped.ped(time, event, event_list, total_peds, ped.Uniform(x = ped_speed), button_dist)
             event_list.insert(events.ped_event("at_button", curr_ped.button_time, curr_ped.id))
             peds[total_peds] = curr_ped
             total_peds += 1
@@ -142,10 +142,12 @@ if __name__ == '__main__':
         #check if its a single ped event otherwise
         #update peds in the order they arrived
         if isinstance(event, events.ped_event):
-            if peds.has_key(event.id):
+            if event.id in peds.keys():
                 peds[event.id].update(event.name, time, event_list, signal_left = sec_until_green_exp)
-        else:
-            for key in peds.keys.sort():
+        elif len(list(peds.keys())) > 0:
+            keys = list(peds.keys())
+            keys.sort()
+            for key in keys:
                 event_list = peds[key].update(event.name, time, event_list, signal_left = sec_until_green_exp)
     print(ped_delay_mu)
     #print("OUTPUT ",)

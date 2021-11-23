@@ -176,7 +176,7 @@ class ped:
             #increment the amount of peds waiting
             self.peds_waiting += 1
             #add the impatient event after a minute of at the button
-            event_list = event_list.insert(events.ped_event("impatient", time + 60, self.id))
+            event_list.insert(events.ped_event("impatient", time + 60, self.id))
             if will_press(self.peds_waiting, self.pushed, trace = self.button_trace):
                 event_list = self.push_button(time, event_list, signal_left)
 
