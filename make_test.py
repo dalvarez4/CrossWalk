@@ -23,7 +23,7 @@ for i, perm in enumerate(perms):
     data['x'] = data['x'].apply(lambda x: x[:-1])
     data['y'] = data['y'].apply(lambda x: x[:-1])
     #print(data)
-    data.to_csv(f'./test_traces/combo_uniform{i}.dat', sep = ' ', header = False)
+    data.to_csv(f'./test_traces/combo_uniform{i}.dat', sep = ' ', header = False, index = False)
     del data
 
 

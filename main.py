@@ -64,21 +64,20 @@ if __name__ == '__main__':
     except:
         exit("Invalid number of arrivals")
     try:
-        auto_dist = open(sys.argv[3], 'r')
+        auto_dist = open(sys.argv[2], 'r')
     except:
         exit("Invalid auto file path")
     try:
-        ped_dist = open(sys.argv[4], 'r')
+        ped_dist = open(sys.argv[3], 'r')
     except:
         exit("Invalid pedestrian file path")
     try:
-        button_dist = open(sys.argv[5], 'r')
+        button_dist = open(sys.argv[4], 'r')
     except:
         exit("Invalid button press file path")
 
-    
-    car_arr, car_speed = map(float, auto_dist.readline().split(' '))
-    ped_arr, ped_speed = map(float, ped_dist.readline().split(' '))
+    car_arr, car_speed = map(lambda x: float(x), auto_dist.readline().split(' '))
+    ped_arr, ped_speed = map(lambda x: float(x), ped_dist.readline().split(' '))
 
     '''loop idea'''
 
@@ -116,7 +115,8 @@ if __name__ == '__main__':
         elif event.name == "ped_exit":
             peds_crossed += 1
             new_delay = peds.pop(event.id).update(event.name, time, event_list)
-            ped_delay_mu = ped_delay_mu + (1/(peds_crossed)) * (new_delay - ped_delay_mu)
+            #ped_delay_mu = ped_delay_mu + (1/(peds_crossed)) * (new_delay - ped_delay_mu)
+            ped_delay_mu = updateMean(ped_delay_mu,new_delay, peds_crossed)
         elif event.name == "car_spawn":
             curr_car = car.car(ped.Uniform(25, 35, x=car_speed), time)
             cars.append(curr_car)
