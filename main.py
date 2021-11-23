@@ -39,13 +39,15 @@ if __name__ == '__main__':
     def setLight4Cars(time):
         for carro in cars:
             carro.updateYellowTime(time)
-    def lightHandles(lightColor,time,car_delay_sigma,car_delay_mu):
+    def lightHandles(lightColor,time,car_delay_sigma,car_delay_mu,cars_passed):
         for carro in cars:
-            carro.carStates(lightColor,time)
+            carro.carStates(lightColor,time,cars_passed)
             if carro.carExit:
                 car_delay_sigma = updateSTD(car_delay_mu, car_delay_sigma, carro.carExit, cars_passed)
                 car_delay_mu = updateMean(car_delay_mu, carro.carExit, cars_passed)
                 cars.remove(carro)
+                cars_passed+=1
+        return car_delay_mu,car_delay_sigma,cars_passed
 
 
 
@@ -126,15 +128,15 @@ if __name__ == '__main__':
                 event_list.insert(events.event("car_spawn", ped.Exponential(lambda_c / 60 / 2, x = car_arr) + time))
         elif event.name == "r_exp":
             sec_until_green_exp = 35
-            lightHandles("Red",time,car_delay_sigma,car_delay_mu)
+            car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Red",time,car_delay_sigma,car_delay_mu,cars_passed)
         elif event.name == "y_exp":
 
-            lightHandles("Yellow",time,car_delay_sigma,car_delay_mu)
+            car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Yellow",time,car_delay_sigma,car_delay_mu,cars_passed)
             #stranded peds are waiting for the next red not the current one
             sec_until_green_exp == 18 + 35
         elif event.name == "g_exp":
             setLight4Cars(time)
-            lightHandles("Green",time,car_delay_sigma,car_delay_mu)
+            car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Green",time,car_delay_sigma,car_delay_mu,cars_passed)
             #pushed button during yellow light
             sec_until_green_exp == 0
         #check if its a single ped event otherwise
@@ -146,6 +148,7 @@ if __name__ == '__main__':
             for key in peds.keys.sort():
                 event_list = peds[key].update(event.name, time, event_list, signal_left = sec_until_green_exp)
     print(ped_delay_mu)
+    #print("OUTPUT ",)
     exit(0)
 
 
