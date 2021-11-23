@@ -150,7 +150,7 @@ if __name__ == '__main__':
             keys.sort()
             for key in keys:
                 event_list = peds[key].update(event.name, time, event_list, signal_left = sec_until_green_exp)
-    print(car_delay_mu, car_delay_sigma, ped_delay_mu)
+    print(f"OUTPUT Average Car Delay {car_delay_mu} Car Delay Standard Deviation {car_delay_sigma} Average Pedestrian Delay {ped_delay_mu}")
     #print("OUTPUT ",)
     exit(0)
 
