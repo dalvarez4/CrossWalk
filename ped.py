@@ -74,7 +74,7 @@ class ped:
         #the calculated total delay of the ped
         self.total_delay = 0
         #theoretical minimum crossing time
-        self.theory_cross = (ped.button_pos - self.pos + cw_peds) / self.speed
+        self.theory_cross = (ped.button_pos + cw_peds) / self.speed + time
     
     def __lt__(self, other):
         return self.button_time < other.button_time
@@ -137,6 +137,7 @@ class ped:
         #pedestrian is now not moving and is waiting
         self.delay_start = time
         ped.peds_waiting += 1
+        self.at_button = True
         #if they push the button push the button
         if self.will_press():
             event_list = self.push_button(time, event_list, signal_left)
@@ -161,9 +162,9 @@ class ped:
         #assert heappop(ped.button_arrivals).id == self.id
         #alternate method for calculating delay although hypothetically the same
         distance_left = cw_peds
-        if not self.at_button:
-            distance_left += (ped.button_pos - self.pos)
-        self.total_delay = (distance_left/self.speed) + time - self.theory_cross
+        #if not self.at_button:
+        #    distance_left += (ped.button_pos - self.pos)
+        #self.total_delay = (distance_left/self.speed) + time - self.theory_cross
 
         
         
