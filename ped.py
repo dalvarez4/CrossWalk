@@ -100,7 +100,8 @@ class ped:
         '''should be called in order of arrival at the button'''
         #calculate new posistion of pedestrian if not already at the button
         if self.pos != ped.button_pos:
-            self.pos = ((time - self.last_time) * self.speed) + self.pos
+            self.pos = (time-self.last_time) * self.speed + self.pos
+        self.last_time = time
         #were waiting and then crossed
         if ped.peds_crossing <= 20 and self.at_button:
             #cross
