@@ -49,15 +49,17 @@ if __name__ == '__main__':
             carro.carStates(lightColor,time)
             #changes
 
-            # if carro.carExit(time):
-            #     print(carro.carExit(time),)
-            #
-            #
-            #     car_delay_sigma = updateSTD(car_delay_mu, car_delay_sigma, carro.carExit(time), cars_passed)
-            #     car_delay_mu = updateMean(car_delay_mu, carro.carExit(time), cars_passed)
-            #     cars.remove(carro)
-            #     cars_passed+=1
-        #return car_delay_mu,car_delay_sigma,cars_passed
+            if carro.carExit(time):
+                print(carro.carExit(time),)
+        
+        
+                car_delay_sigma = updateSTD(car_delay_mu, car_delay_sigma, carro.carExit(time), cars_passed)
+                car_delay_mu = updateMean(car_delay_mu, carro.carExit(time), cars_passed)
+                cars.remove(carro)
+                cars_passed+=1
+        return car_delay_mu,car_delay_sigma,cars_passed
+
+        
 
 
 
@@ -178,19 +180,13 @@ if __name__ == '__main__':
             #ped.ped.pushed = False
 
             sec_until_green_exp = 35
-            #changes
-            lightHandles("Red",time,car_delay_sigma,car_delay_mu,cars_passed)
-            for carro in cars:
-                carro.setgb(time)
 
-            #car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Red",time,car_delay_sigma,car_delay_mu,cars_passed)
+            car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Red",time,car_delay_sigma,car_delay_mu,cars_passed)
         elif event.name == "y_exp":
             sec_until_green_exp = 18 + 35
             ped.ped.last_sig = "Yellow"
             ped.ped.last_sig_end = time
 
-            #changes
-            lightHandles("Yellow",time,car_delay_sigma,car_delay_mu,cars_passed)
 
             #ready for a new signal press
             ped.ped.pushed = False
@@ -216,17 +212,15 @@ if __name__ == '__main__':
             heapify(ped.ped.button_arrivals)
 
 
-            #car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Yellow",time,car_delay_sigma,car_delay_mu,cars_passed)
+            car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Yellow",time,car_delay_sigma,car_delay_mu,cars_passed)
             #stranded peds are waiting for the next red not the current one
         elif event.name == "g_exp":
             ped.ped.last_sig = "Green"
             ped.ped.last_sig_end = time
 
             setLight4Cars(time)
-            #changes
-            lightHandles("Green",time,car_delay_sigma,car_delay_mu,cars_passed)
 
-            #car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Green",time,car_delay_sigma,car_delay_mu,cars_passed)
+            car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Green",time,car_delay_sigma,car_delay_mu,cars_passed)
             #pushed button during yellow light
             sec_until_green_exp = 35 + 18 + 8
         elif event.name == "at_button":

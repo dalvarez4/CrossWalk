@@ -122,19 +122,14 @@ class car:
         self.carTime=time
 
     def carExit(self,time):
-        # if self.carPosition>=7*330+46*6:
-        #     newTime=(self.carPosition-(7*330+46*6))/self.speed
-        #     totalTime=time-newTime
-        #
-        #     return totalTime-self.carIdealExitTime
-        # else:
-        #     return False
-        #changes
-        if self.delayed:
-            hj=self.carBirth+(7/2*blockLength+3*streetWidth-crosswalkWidth/2-self.stoppingDistance)/self.carMaxSpeed+(self.carMaxSpeed/self.carAccel)
-            return self.gb-hj
-        else:
-            return 0
+         if self.carPosition>=7*330+46*6:
+             newTime=(self.carPosition-(7*330+46*6))/self.speed
+             totalTime=time-newTime
+        
+             return totalTime-self.carIdealExitTime
+         else:
+             return False
+             
     def updateYellowTime(self,time):
         self.yellowTimer=time
     #changes
