@@ -91,7 +91,7 @@ class ped:
         else: 
             heappush(event_list, events.event("g_exp", time + signal_left))
             heappush(event_list, events.event("y_exp", time + signal_left + 8))
-            heappush(event_list, events.event("r_exp", time + signal_left + 18))
+            heappush(event_list, events.event("r_exp", time + signal_left + 8 + 18))
         return event_list
     
 
