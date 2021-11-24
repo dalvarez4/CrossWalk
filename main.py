@@ -122,6 +122,7 @@ if __name__ == '__main__':
             curr_ped = ped.ped(time, total_peds, ped.Uniform(x = ped_speed), button_dist)
             #print(curr_ped.speed)
             heappush(event_list, events.ped_event("at_button", curr_ped.button_time, curr_ped.id))
+            heappush(event_list, events.ped_event("impatient", curr_ped.at_button + 60, curr_ped.id))
             peds[total_peds] = curr_ped
             total_peds += 1
             if total_peds < arrivals:
