@@ -150,10 +150,12 @@ if __name__ == '__main__':
             #reset the amount of peds crossing
             ped.ped.peds_crossing = 0
             #ready for a new signal press
-            ped.ped.pushed = False
+            #ped.ped.pushed = False
             sec_until_green_exp = 35
             car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Red",time,car_delay_sigma,car_delay_mu,cars_passed)
         elif event.name == "y_exp":
+            #ready for a new signal press
+            ped.ped.pushed = False
             #make a copy of the list so it isnt affected by changes to the heap made during the crossing
             waiting_peds = ped.ped.button_arrivals.copy()
             still_waiting = []
