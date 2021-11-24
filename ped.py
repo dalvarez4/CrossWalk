@@ -104,7 +104,7 @@ class ped:
             #cross
             self.crossing(time)
         #crossed before reaching the button
-        elif ped.peds_crossing <= 20 and ((ped.button_pos - self.pos - 12 + cw_peds) / self.speed <= RED):
+        elif ped.peds_crossing <= 20 and ((ped.button_pos - self.pos + cw_peds) / self.speed <= RED):
             #cross without getting to the button
             self.crossing(time)
         #strandedonly if at button
@@ -119,6 +119,9 @@ class ped:
         return event_list
 
     def impatient_press(self, time, event_list, signal_left):
+        #if they already walked don't do anything
+        if self.walked:
+            return event_list
         #is just impatient, deal with it, push the damn button
         event_list = self.push_button(time, event_list, signal_left)
         return event_list
