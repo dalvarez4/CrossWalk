@@ -163,7 +163,6 @@ if __name__ == '__main__':
                 #print(pedestrian.id)
                 pedestrian = heappop(waiting_peds)
                 event_list = pedestrian.walk_signal(time, event_list, sec_until_green_exp)
-                #print(pedestrian.button_time)
                 if pedestrian.walked:
                     #update the mean
                     ped_delay_mu = updateMean(ped_delay_mu, pedestrian.total_delay, peds_crossed)
