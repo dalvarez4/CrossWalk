@@ -189,7 +189,11 @@ class ped:
         '''never called directly'''
         if ped.pushed:
             return False
-        x = float(ped.button_trace.readline())
+        x = 0
+        try:
+            x = float(ped.button_trace.readline())
+        except:
+            exit("Button Trace ended prematurely")
         #peds waiting -1?
         if ped.peds_waiting == 0 or self.stranded:
             return Uniform(0, 16, x) <= 15
