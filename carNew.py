@@ -27,3 +27,5 @@ class car:
         self.carMaxSpeed=self.speed
         self.carIdealExitTime=(7*330+46*6)/speed+self.carTime
         self.stoppingDistance=1/2*self.speed**2/self.carAccel
+
+
