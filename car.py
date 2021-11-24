@@ -3,6 +3,10 @@ blockLength=330
 crosswalkWidth=24
 streetWidth=46
 crosswalkPosition=1181#330*3+46*3+330/2-24/2
+streetLength=7*blockLength+6*streetWidth
+
+#changes
+
 
 class car:
 
@@ -18,7 +22,9 @@ class car:
     carExit=0
     stoppingDistance=0
     yellowTimer=0
-
+    #changes
+    delayed=False
+    gb=0
 
 
 
@@ -28,7 +34,7 @@ class car:
         self.carTime=self.carBirth
         self.speed=self.speed
         self.carMaxSpeed=self.speed
-        self.carIdealExitTime=(7*330+46*6)/speed+self.carTime
+        self.carIdealExitTime=(7*330+46*6)/self.carMaxSpeed+self.carBirth
         self.stoppingDistance=1/2*self.speed**2/self.carAccel
 
 
@@ -58,10 +64,15 @@ class car:
         elif crosswalkPosition-self.stoppingDistance<self.carPosition<deltaPos:
             self.carPosition+=self.speed*(time-self.carTime)-1/2*self.carAccel*(time-self.carTime)**2
             self.speed=self.speed-self.carAccel*(time-self.carTime)
+            #changes
+            self.delayed=True
+
         elif self.carPosition<deltaPos:
             if self.carPosition+self.speed*(time-self.carTime)<self.stoppingDistance:
                 self.carPosition+=self.speed*(time-self.carTime)
             else:
+                #changes
+                self.delayed=True
                 newTime=(crosswalkPosition-self.stoppingDistance-self.carPosition)/self.speed+self.carTime
                 self.carPosition=crosswalkPosition-self.stoppingDistance
                 self.carPosition+=self.speed*(time-newTime)-1/2*self.carAccel*(time-newTime)**2
@@ -77,10 +88,16 @@ class car:
         if self.carPosition-self.carLength>crosswalkPosition+crosswalkWidth:
             self.carPosition+=self.speed*(time-self.carTime)
         elif self.carPosition+self.speed*(time-self.carTime)>crosswalkPosition:
+            #changes
+            self.delayed=True
+
             self.carPosition=crosswalkPosition
             self.speed=0
         #this can be negative but I think we were told to ignore this
         elif self.carPosition+self.speed*(time-self.carTime)>crosswalkPosition-self.stoppingDistance:
+            #changes
+            self.delayed=True
+
             if self.carPosition>crosswalkPosition-self.stoppingDistance:
                 self.carPosition+=self.speed*(time-self.carTime)-1/2*self.carAccel*(time-self.carTime)**2
                 self.speed=self.speed-self.carAccel*(time-self.carTime)
@@ -105,12 +122,25 @@ class car:
         self.carTime=time
 
     def carExit(self,time):
-        if self.carPosition>=7*330+46*6:
-            newTime=(self.carPosition-7*330+46*6)/self.speed
-            totalTime=time-newTime
-            return totalTime-self.carIdealExitTime
+        # if self.carPosition>=7*330+46*6:
+        #     newTime=(self.carPosition-(7*330+46*6))/self.speed
+        #     totalTime=time-newTime
+        #
+        #     return totalTime-self.carIdealExitTime
+        # else:
+        #     return False
+        #changes
+        if self.delayed:
+            hj=self.carBirth+(7/2*blockLength+3*streetWidth-crosswalkWidth/2-self.stoppingDistance)/self.carMaxSpeed+(self.carMaxSpeed/self.carAccel)
+            return self.gb-hj
         else:
-            return False
-
+            return 0
     def updateYellowTime(self,time):
         self.yellowTimer=time
+    #changes
+    def getExitTime(self):
+        return self.carIdealExitTime
+    def getgb(self):
+        return self.gb
+    def setgb(self,time):
+        self.gb=time
