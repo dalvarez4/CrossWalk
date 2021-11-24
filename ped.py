@@ -1,6 +1,8 @@
 import random
 import numpy as np
 import events
+from heapq import heapify, heappush, heappop
+
 
 def Uniform(a = 2.6,b = 4.1, x = random.random()):
     return a + (b - a) * x
@@ -90,6 +92,9 @@ class ped:
     peds_crossing = 0
     #trace values for button presses
     button_trace = []
+    #order that peds arrive at button
+    #sort by order they WILL arrive at button
+    button_arrivals = []
 
     def __init__(self, time, event, event_list, num_peds, speed, button_trace):
         if ped.button_trace == []:
@@ -123,13 +128,13 @@ class ped:
         #assuming cross walk works instantanuosly on a stale (with yellow delay)
         #print(signal_left)
         if(signal_left <= 0):
-            event_list.insert(events.event("g_exp", time))
-            event_list.insert(events.event("y_exp", time + 8))
-            event_list.insert(events.event("r_exp", time + 8 + 18))
+            heappush(event_list, events.event("g_exp", time))
+            heappush(event_list, events.event("y_exp", time + 8))
+            heappush(event_list, events.event("r_exp", time + 8 + 18))
         else: 
-            event_list.insert(events.event("g_exp", time + signal_left))
-            event_list.insert(events.event("y_exp", time + signal_left + 8))
-            event_list.insert(events.event("r_exp", time + signal_left + 18))
+            heappush(event_list, events.event("g_exp", time + signal_left))
+            heappush(event_list, events.event("y_exp", time + signal_left + 8))
+            heappush(event_list, events.event("r_exp", time + signal_left + 18))
         return event_list
     
     def update(self, event, time, event_list, signal_left = 0):
@@ -162,7 +167,7 @@ class ped:
                 ped.peds_crossing += 1
 
                 #if can walk add a ped exit event
-                event_list.insert(events.ped_event("ped_exit", crossed_at, self.id))
+                heappush(event_list, events.ped_event("ped_exit", crossed_at, self.id))
 
                 #calculate delay if allowed to walk
                 if self.delay_start != None:
@@ -184,7 +189,7 @@ class ped:
             self.delay_start = time
             #increment the amount of peds waiting
             #add the impatient event after a minute of at the button
-            event_list.insert(events.ped_event("impatient", time + 60, self.id))
+            heappush(event_list, events.ped_event("impatient", time + 60, self.id))
             if will_press(ped.peds_waiting, ped.pushed, trace = ped.button_trace):
                 event_list = self.push_button(time, event_list, signal_left)
             ped.peds_waiting += 1

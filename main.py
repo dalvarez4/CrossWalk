@@ -4,6 +4,7 @@ import car
 import ped
 import events
 import sys
+from heapq import heapify, heappush, heappop
 blockLength=330
 crosswalkWidth=24
 streetWidth=46
@@ -31,9 +32,9 @@ if __name__ == '__main__':
         newMean=oldMean+1/(N+1)*(newPoint-oldMean)
         return newMean
     def updateSTD(oldMean,oldSTD,newPoint,N):
-        print(oldMean, oldSTD, newPoint, N)
-        newSTD=oldSTD+(N/N+1)*(newPoint-oldMean)**2
-        print(newSTD)
+        #print(oldMean, oldSTD, newPoint, N)
+        newSTD=oldSTD+(N/(N+1))*(newPoint-oldMean)**2
+        #print(newSTD)
         return newSTD
 
 
@@ -93,10 +94,14 @@ if __name__ == '__main__':
 
     max_cars = 200
     cars_passed = 0
-    event_list = events.event_list()
+    #event_list = events.event_list()
     #spawn cars and first ped
-    event_list.insert(events.event("ped_spawn", ped.Exponential(2 * lambda_p / 60, x = ped_arr)))
-    event_list.insert(events.event("car_spawn",ped.Exponential(2*lambda_c / 60, x = car_arr)))
+    #event_list.insert(events.event("ped_spawn", ped.Exponential(2 * lambda_p / 60, x = ped_arr)))
+    #event_list.insert(events.event("car_spawn",ped.Exponential(2*lambda_c / 60, x = car_arr)))
+    event_list = []
+    heapify(event_list)
+    heappush(event_list, events.event("ped_spawn", ped.Exponential(60 / (2 * lambda_p), x = ped_arr)))
+    heappush(event_list, events.event("car_spawn",ped.Exponential(60 / (2 * lambda_c), x = car_arr)))
     peds = {}
     cars=[]
     time = 0
@@ -110,13 +115,13 @@ if __name__ == '__main__':
     total_peds = 0
     total_cars = 0
     while cars_passed < arrivals and peds_crossed < arrivals:
-        event = event_list.next()
+        event = heappop(event_list)
         time = event.arrival_time
         sec_until_green_exp = sec_until_green_exp - (time - last_time)
         if event.name == 'ped_spawn':
             curr_ped = ped.ped(time, event, event_list, total_peds, ped.Uniform(x = ped_speed), button_dist)
             #print(curr_ped.speed)
-            event_list.insert(events.ped_event("at_button", curr_ped.button_time, curr_ped.id))
+            heappush(event_list, events.ped_event("at_button", curr_ped.button_time, curr_ped.id))
             peds[total_peds] = curr_ped
             total_peds += 1
             if total_peds < arrivals:
@@ -124,7 +129,8 @@ if __name__ == '__main__':
                     ped_arr, ped_speed = float(ped_dist.readline()), float(ped_dist.readline())
                 except:
                     exit("Pedestrian trace ended prematurely")
-                event_list.insert(events.event("ped_spawn", ped.Exponential(60/(2 * lambda_p) , x = ped_arr) + time))
+                heappush(event_list, events.event("ped_spawn", ped.Exponential(60 / (2*lambda_p), x = ped_arr) + time))
+
         elif event.name == "ped_exit":
             peds_crossed += 1
             new_delay = peds.pop(event.id).update(event.name, time, event_list)
@@ -139,7 +145,7 @@ if __name__ == '__main__':
                     car_arr, car_speed = float(auto_dist.readline()), float(auto_dist.readline())
                 except:
                     exit("Auto trace ended prematurely")
-                event_list.insert(events.event("car_spawn", ped.Exponential(60/(2 * lambda_c) , x = car_arr) + time))
+                heappush(event_list, events.event("car_spawn", ped.Exponential(60 / (2*lambda_c), x = car_arr) + time))
         elif event.name == "r_exp":
             sec_until_green_exp = 35
             car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Red",time,car_delay_sigma,car_delay_mu,cars_passed)
