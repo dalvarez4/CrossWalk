@@ -45,6 +45,10 @@ class ped:
     button_arrivals = []
     #position of the button
     button_pos = B/2 + S + B/2
+    #the last signal of the sim, ie if the lsat signal is red, it is now green
+    last_sig = "Red"
+    #time the last signal ended
+    last_sig_end = 0
 
     def __init__(self, time, num_peds, speed, button_trace):
         #initialize the trace file to use for calculating button press probabilities, should be used regardless of whther or not a cycle is already queued I think
@@ -84,6 +88,7 @@ class ped:
         ped.pushed = True
         #assuming cross walk works instantanuosly on a stale green (with yellow delay)
         #negative signal time indicates the signal could have changed earlier in the simulation but had no reason to
+        #print(signal_left)
         if(signal_left <= 0):
             heappush(event_list, events.event("g_exp", time))
             heappush(event_list, events.event("y_exp", time + 8))
@@ -135,6 +140,15 @@ class ped:
         if self.walked:
             return event_list
         #is at the button
+
+        #if the signal is not red currently start the timer
+        if ped.last_sig == "Red" or ped.last_sig == "Green":
+            heappush(event_list, events.ped_event("impatient", time + 60, self.id))
+        #otherwise if the signal is currently red, add an impatient delay until after red is done
+        elif ped.last_sig == "Yellow":
+            #print(signal_left)
+            heappush(event_list, events.ped_event("impatient", time + (RED - (time - ped.last_sig_end) + 60), self.id))
+
         #pedestrian is now not moving and is waiting
         self.delay_start = time
         ped.peds_waiting += 1

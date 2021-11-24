@@ -130,7 +130,7 @@ if __name__ == '__main__':
             curr_ped = ped.ped(time, total_peds, ped.Uniform(x = ped_speed), button_dist)
             #print(curr_ped.speed)
             heappush(event_list, events.ped_event("at_button", curr_ped.button_time, curr_ped.id))
-            heappush(event_list, events.ped_event("impatient", curr_ped.button_time + 60, curr_ped.id))
+            #heappush(event_list, events.ped_event("impatient", curr_ped.button_time + 60, curr_ped.id))
             peds[total_peds] = curr_ped
             total_peds += 1
             if total_peds < arrivals:
@@ -164,12 +164,13 @@ if __name__ == '__main__':
                 if carro.getExitTime()<time+1 and carro.getExitTime()>time-1:
                     car_delay_sigma=updateSTD(car_delay_mu,car_delay_sigma,carro.carExit(time),cars_passed)
                     car_delay_mu=updateMean(car_delay_mu,carro.carExit(time),cars_passed)
-                    print(carro.carExit(time))
+                    #print(carro.carExit(time))
                     cars_passed+=1
                     cars.remove(carro)
 
         elif event.name == "r_exp":
-
+            ped.ped.last_sig = "Red"
+            ped.ped.last_sig_end = time
 
             #reset the amount of peds crossing
             ped.ped.peds_crossing = 0
@@ -184,6 +185,9 @@ if __name__ == '__main__':
 
             #car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Red",time,car_delay_sigma,car_delay_mu,cars_passed)
         elif event.name == "y_exp":
+            sec_until_green_exp = 18 + 35
+            ped.ped.last_sig = "Yellow"
+            ped.ped.last_sig_end = time
 
             #changes
             lightHandles("Yellow",time,car_delay_sigma,car_delay_mu,cars_passed)
@@ -214,8 +218,9 @@ if __name__ == '__main__':
 
             #car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Yellow",time,car_delay_sigma,car_delay_mu,cars_passed)
             #stranded peds are waiting for the next red not the current one
-            sec_until_green_exp == 18 + 35
         elif event.name == "g_exp":
+            ped.ped.last_sig = "Green"
+            ped.ped.last_sig_end = time
 
             setLight4Cars(time)
             #changes
@@ -223,13 +228,14 @@ if __name__ == '__main__':
 
             #car_delay_mu,car_delay_sigma,cars_passed=lightHandles("Green",time,car_delay_sigma,car_delay_mu,cars_passed)
             #pushed button during yellow light
-            sec_until_green_exp == 35 + 18 + 8
+            sec_until_green_exp = 35 + 18 + 8
         elif event.name == "at_button":
             if event.id in peds.keys():
                 event_list = peds[event.id].at_signal(time, event_list, sec_until_green_exp)
         elif event.name == "impatient":
             if event.id in peds.keys():
                 event_list = peds[event.id].impatient_press(time, event_list, sec_until_green_exp)
+        last_time = time
         #check if its a single ped event otherwise
         #update peds in the order they arrived
         #if isinstance(event, events.ped_event):
