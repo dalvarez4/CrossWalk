@@ -14,7 +14,7 @@ class car:
     carTime=0
     carMaxSpeed=0
     speed=0
-    delayAutomobile=0
+    delayed=False
     carExit=0
     stoppingDistance=0
     yellowTimer=0
@@ -22,10 +22,22 @@ class car:
     def __init__(self,speed,birthTime):
         self.carBirth=birthTime
         self.speed=speed*5280/3600
-        self.carTime=self.carBirth
         self.speed=self.speed
         self.carMaxSpeed=self.speed
         self.carIdealExitTime=(7*330+46*6)/speed+self.carTime
         self.stoppingDistance=1/2*self.speed**2/self.carAccel
+    def runsRedlight(self,time):
+        redLightStart=time-18
+        if self.speed*(redLightStart-self.carBirth)<crosswalkPosition+crosswalkWidth-self.carLength and self.speed*(time-self.carBirth)>crosswalkPosition:
+            self.delayed=True
 
 
+    def checkDelay(self):
+        if self.delayed:
+            hj=self.carBirth+(7/2*blockLength+3*streetWidth-crosswalkWidth/2-self.stoppingDistance)/self.carMaxSpeed+(self.carMaxSpeed/self.carAccel)
+            return self.gb-hj
+        else:
+            return 0
+
+    def getExitTime(self):
+        return self.carIdealExitTime
