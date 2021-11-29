@@ -135,6 +135,7 @@ if __name__ == '__main__':
             heappush(event_list, events.event("car_despawn", curr_car.getExitTime()))
 
             cars.append(curr_car)
+
             total_cars += 1
             if total_cars < arrivals:
                 try:
@@ -144,12 +145,15 @@ if __name__ == '__main__':
                 heappush(event_list, events.event("car_spawn", ped.Exponential(60 / (2*lambda_c), x = car_arr) + time))
                 #changes
         elif event.name=="car_despawn":
+
             for carro in cars:
                 if carro.getExitTime()<time+0.001 and carro.getExitTime()>time-0.001:
                     car_delay_sigma=updateSTD(car_delay_mu,car_delay_sigma,carro.checkDelay(),cars_passed)
                     car_delay_mu=updateMean(car_delay_mu,carro.checkDelay(),cars_passed)
+                    print(carro.checkDelay())
                     cars_passed+=1
                     cars.remove(carro)
+
 
         elif event.name == "r_exp":
             ped.ped.last_sig = "Red"
@@ -159,12 +163,10 @@ if __name__ == '__main__':
             ped.ped.peds_crossing = 0
             #ready for a new signal press
             #ped.ped.pushed = False
-
             sec_until_green_exp = 35
             #changes
             for carro in cars:
-
-                carro.newrunsRedLight(time)
+                carro.runsRedLight(time)
 
 
         elif event.name == "y_exp":
