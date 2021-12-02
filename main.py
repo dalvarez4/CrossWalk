@@ -34,9 +34,7 @@ if __name__ == '__main__':
         newMean=oldMean+1/(N+1)*(newPoint-oldMean)
         return newMean
     def updateSTD(oldMean,oldSTD,newPoint,N):
-        #print(oldMean, oldSTD, newPoint, N)
         newSTD=oldSTD+(N/(N+1))*(newPoint-oldMean)**2
-        #print(newSTD)
         return newSTD
 
 
