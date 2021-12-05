@@ -89,8 +89,8 @@ if __name__ == '__main__':
     #event_list.insert(events.event("car_spawn",ped.Exponential(2*lambda_c / 60, x = car_arr)))
     event_list = []
     heapify(event_list)
-    heappush(event_list, events.event("ped_spawn", ped.Exponential(60 / (2 * lambda_p), x = ped_arr)))
-    heappush(event_list, events.event("car_spawn",ped.Exponential(60 / (2 * lambda_c), x = car_arr)))
+    heappush(event_list, events.event("ped_spawn", ped.Exponential((2 * lambda_p)/60, x = ped_arr)))
+    heappush(event_list, events.event("car_spawn",ped.Exponential((2 * lambda_c)/60, x = car_arr)))
     peds = {}
     cars=[]
     time = 0
@@ -148,7 +148,8 @@ if __name__ == '__main__':
                 if carro.getExitTime()<time+0.001 and carro.getExitTime()>time-0.001:
                     car_delay_sigma=updateSTD(car_delay_mu,car_delay_sigma,carro.checkDelay(),cars_passed)
                     car_delay_mu=updateMean(car_delay_mu,carro.checkDelay(),cars_passed)
-                    print(carro.checkDelay())
+                    if carro.checkDelay()!=0:
+                        print(time," auto_exit","carsPassed:",cars_passed,"car delay: ",carro.checkDelay() )
                     cars_passed+=1
                     cars.remove(carro)
 
