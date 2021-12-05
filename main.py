@@ -149,7 +149,7 @@ if __name__ == '__main__':
                     car_delay_sigma=updateSTD(car_delay_mu,car_delay_sigma,carro.checkDelay(),cars_passed)
                     car_delay_mu=updateMean(car_delay_mu,carro.checkDelay(),cars_passed)
                     if carro.checkDelay()!=0:
-                        print(time," auto_exit","carsPassed:",cars_passed,"car delay: ",carro.checkDelay() )
+                        print(time," auto_exit","carsPassed:",cars_passed,"car delay: ",carro.checkDelay(),"enterTime=",carro.carBirth,"gb=",carro.gb,"hj=",carro.hj)
                     cars_passed+=1
                     cars.remove(carro)
 
