@@ -168,7 +168,7 @@ class ped:
            ped.peds_waiting -= 1
         '''value to be grabbed'''
         #if they never waited they had no delay
-        self.delay = (time + (cw_peds / self.speed)) - self.theory_cross
+        self.total_delay = (time + (cw_peds / self.speed)) - self.theory_cross
         #if self.delay_start == None:
         #    self.total_delay = 0
         #otherwise calculate the difference between when they started waiting and when they crossed
