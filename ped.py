@@ -49,6 +49,7 @@ class ped:
     last_sig = "Red"
     #time the last signal ended
     last_sig_end = 0
+    total_delayed = 0
 
     def __init__(self, time, num_peds, speed, button_trace):
         #initialize the trace file to use for calculating button press probabilities, should be used regardless of whther or not a cycle is already queued I think
@@ -169,6 +170,10 @@ class ped:
         '''value to be grabbed'''
         #if they never waited they had no delay
         self.total_delay = (time + (cw_peds / self.speed)) - self.theory_cross
+        self.delayed = False
+        if self.total_delay > 0:
+            self.delayed = True
+            ped.total_delayed += 1
         #if self.delay_start == None:
         #    self.total_delay = 0
         #otherwise calculate the difference between when they started waiting and when they crossed

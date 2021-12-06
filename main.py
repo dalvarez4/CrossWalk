@@ -184,7 +184,9 @@ if __name__ == '__main__':
                 event_list = pedestrian.walk_signal(time, event_list, sec_until_green_exp)
                 if pedestrian.walked:
                     #update the mean
-                    ped_delay_mu = updateMean(ped_delay_mu, pedestrian.total_delay, peds_crossed)
+                    #ped_delay_mu = updateMean(ped_delay_mu, pedestrian.total_delay, peds_crossed)
+                    if pedestrian.delayed:
+                        ped_delay_mu = updateMean(ped_delay_mu, pedestrian.total_delay, ped.ped.total_delayed)
                     #update the amount that have crossed
                     peds_crossed += 1
                     #remove from the dict of active peds
