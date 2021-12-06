@@ -78,7 +78,7 @@ class ped:
         #the calculated total delay of the ped
         self.total_delay = 0
         #theoretical minimum crossing time
-        self.theory_cross = (ped.button_pos + cw_peds) / self.speed + time
+        self.theory_cross = ((ped.button_pos + cw_peds) / self.speed) + time
     
     def __lt__(self, other):
         return self.button_time < other.button_time
@@ -168,11 +168,12 @@ class ped:
            ped.peds_waiting -= 1
         '''value to be grabbed'''
         #if they never waited they had no delay
-        if self.delay_start == None:
-            self.total_delay = 0
+        self.delay = (time + (cw_peds / self.speed)) - self.theory_cross
+        #if self.delay_start == None:
+        #    self.total_delay = 0
         #otherwise calculate the difference between when they started waiting and when they crossed
-        else:
-            self.total_delay = time - self.delay_start
+        #else:
+        #    self.total_delay = time - self.delay_start
         #if the ped crossed remove them from the waiting heap make sure they only pop themselves
         #assert heappop(ped.button_arrivals).id == self.id
         #alternate method for calculating delay although hypothetically the same
