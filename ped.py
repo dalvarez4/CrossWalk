@@ -188,13 +188,13 @@ class ped:
         
     def will_press(self):
         '''never called directly'''
-        if ped.pushed:
-            return False
-        x = 0
         try:
             x = float(ped.button_trace.readline())
         except:
             exit("Button Trace ended prematurely")
+        if ped.pushed:
+            return False
+        x = 0
         #peds waiting -1?
         if ped.peds_waiting == 0 or self.stranded:
             return Uniform(0, 16, x) <= 15
