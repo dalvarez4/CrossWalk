@@ -49,7 +49,6 @@ class ped:
     last_sig = "Red"
     #time the last signal ended
     last_sig_end = 0
-    total_delayed = 0
 
     def __init__(self, time, num_peds, speed, button_trace):
         #initialize the trace file to use for calculating button press probabilities, should be used regardless of whther or not a cycle is already queued I think
@@ -109,17 +108,17 @@ class ped:
             self.pos = (time-self.last_time) * self.speed + self.pos
         self.last_time = time
         #were waiting and then crossed
-        if ped.peds_crossing <= 20 and self.at_button:
+        if ped.peds_crossing < 20 and self.at_button:
             #cross
             self.crossing(time)
         #crossed before reaching the button
-        elif ped.peds_crossing <= 20 and ((ped.button_pos - self.pos + cw_peds) / self.speed <= RED):
+        elif ped.peds_crossing < 20 and ((ped.button_pos - self.pos + cw_peds) / self.speed <= RED):
             #cross without getting to the button
             self.crossing(time)
         #strandedonly if at button
         #need to make sure I account for people that WILL be stranded ie, they will walk up to the light during the signal and not make it
         #this will not negate their normal button arrival chance at pressing, ie they will have to chances to press
-        elif ped.peds_crossing > 20 and (((ped.button_pos - self.pos + cw_peds) / self.speed <= RED) or self.at_button):
+        elif ped.peds_crossing >= 20 and (((ped.button_pos - self.pos + cw_peds) / self.speed <= RED) or self.at_button):
             self.stranded = True
             #if they pushed the button make em push the button
             if self.will_press():
@@ -170,10 +169,6 @@ class ped:
         '''value to be grabbed'''
         #if they never waited they had no delay
         self.total_delay = (time + (cw_peds / self.speed)) - self.theory_cross
-        self.delayed = False
-        if self.total_delay > 0:
-            self.delayed = True
-            ped.total_delayed += 1
         #if self.delay_start == None:
         #    self.total_delay = 0
         #otherwise calculate the difference between when they started waiting and when they crossed
